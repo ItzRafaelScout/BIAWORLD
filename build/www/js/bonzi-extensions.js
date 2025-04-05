@@ -111,24 +111,5 @@
             // Call the original function with the modified options
             return originalContextMenu.call(this, options);
         };
-        
-        // Override the socket.on('update') event to show country flags
-        var originalSocketUpdate = socket._callbacks.$update ? socket._callbacks.$update[0] : null;
-        if (originalSocketUpdate) {
-            socket.off('update');
-            socket.on('update', function(data) {
-                // Call original handler
-                originalSocketUpdate(data);
-                
-                // Add country flag to name tags
-                if (bonzis[data.guid] && bonzis[data.guid].public.location) {
-                    var bonzi = bonzis[data.guid];
-                    var $nameTag = bonzi.$nametag;
-                    if ($nameTag.text() === bonzi.userPublic.name) {
-                        $nameTag.text(bonzi.public.location + " " + bonzi.userPublic.name);
-                    }
-                }
-            });
-        }
     });
 })(); 
