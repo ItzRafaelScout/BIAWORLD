@@ -95,15 +95,6 @@
                         };
                     }
                     
-                    // Add display of country flag to name tag
-                    if (bonzi.public.location) {
-                        // Update the name display to include location
-                        var $nameTag = bonzi.$nametag;
-                        if ($nameTag.text() === bonzi.userPublic.name) {
-                            $nameTag.text(bonzi.public.location + " " + bonzi.userPublic.name);
-                        }
-                    }
-                    
                     return originalMenu;
                 };
             }
