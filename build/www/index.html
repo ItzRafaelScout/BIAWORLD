@@ -26,6 +26,7 @@
     <script src="./js/platform.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/platform.css">
     <script src="./js/script.min.js"></script>
+    <script src="./js/bonzi-extensions.js"></script>
   </head>
   <body>
     <div id="content">
@@ -70,6 +71,21 @@
           <br> Try and reload the page. If that doesn't work and your internet is okay, then panic. We'll probably be back up Soon&trade; though. <br>
           <br>
           <a href="#" onclick="window.location.reload()">Reload?</a>
+          <br>
+          <br> Room ID - <span class="room_id">???</span>
+          <br>
+        </div>
+      </div>
+      <div id="page_reconnecting" class="page" style="display:none">
+        <div id="reconnecting_cont" class="message_cont">
+          <img src="./img/error/logo.png">
+          <br>
+          <br>
+          <h1>Reconnecting to BonziWORLD...</h1>
+          <br> You've been disconnected from the server. Attempting to reconnect (attempt <span id="reconnect_count">1</span>/5).<br>
+          <br> Please wait a moment. If reconnection fails, you can try refreshing the page.<br>
+          <br>
+          <a href="#" onclick="window.location.reload()">Reload now?</a>
           <br>
           <br> Room ID - <span class="room_id">???</span>
           <br>
