@@ -23,7 +23,10 @@
 				"name": 0,
 				"owo": 0,
 				"sanitize": 3,
-				"pope": 3
+				"pope": 3,
+				"kick": 3,
+				"ban": 3,
+				"showip": 3
 			},
 			"room_max": 8,
 			"owner": null,
@@ -62,7 +65,10 @@
 				"name": 0,
 				"owo": 0,
 				"sanitize": 3,
-				"pope": 3
+				"pope": 3,
+				"kick": 3,
+				"ban": 3,
+				"showip": 3
 			},
 			"room_max": 30,
 			"owner": null,

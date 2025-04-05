@@ -81,7 +81,8 @@ const Utils = require("./utils.js")
 // ========================================================================
 
 const Meat = require("./meat.js");
-Meat.beat();
+// Update to use the new init function that includes reconnection setup
+Meat.init();
 
 // Console commands
 const Console = require('./console.js');

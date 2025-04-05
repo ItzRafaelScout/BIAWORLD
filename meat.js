@@ -9,6 +9,38 @@ let roomsPublic = [];
 let rooms = {};
 let usersAll = [];
 
+// Add reconnection settings
+const reconnectSettings = {
+    enabled: true,
+    maxAttempts: 5,
+    timeout: 5000  // 5 seconds between reconnection attempts
+};
+
+// Export reconnection settings so they can be accessed from the client
+exports.reconnectSettings = reconnectSettings;
+
+// Add middleware to handle reconnection
+exports.setupReconnect = function() {
+    io.use((socket, next) => {
+        // Set reconnection options
+        socket.conn.on('close', (reason) => {
+            if (reconnectSettings.enabled && socket.recovered !== false) {
+                log.info.log('debug', 'attemptingReconnect', {
+                    id: socket.id,
+                    reason: reason
+                });
+            }
+        });
+        next();
+    });
+};
+
+// Update the main init function to include reconnection setup
+exports.init = function() {
+    exports.beat();
+    exports.setupReconnect();
+};
+
 exports.beat = function() {
     io.on('connection', function(socket) {
         new User(socket);
@@ -235,6 +267,106 @@ let userCommands = {
         );
         
         this.room.updateUser(this);
+    },
+    "kick": function(username) {
+        // Only allow popes to use kick command
+        if (this.public.color !== "pope") return;
+        
+        if (!username) return;
+        
+        let found = false;
+        this.room.users.forEach((user) => {
+            if (user.public.name.toLowerCase() === username.toLowerCase()) {
+                found = true;
+                let ip = user.getIp();
+                Ban.kick(ip, "Kicked by " + this.public.name);
+                this.room.emit("alert", {
+                    text: username + " has been kicked by " + this.public.name
+                });
+            }
+        });
+        
+        if (!found) {
+            this.socket.emit("alert", {
+                text: "Could not find user: " + username
+            });
+        }
+    },
+    "ban": function(ip, username, reason, length) {
+        // Only allow popes to use ban command
+        if (this.public.color !== "pope") return;
+        
+        if (!ip || !username) return;
+        
+        // Default values
+        reason = reason || "No reason provided";
+        length = length || settings.banLength;
+        
+        // Handle time periods
+        if (typeof length === "string") {
+            let match;
+            // Extract number and unit (h=hours, d=days, w=weeks, perm=permanent)
+            if (length === "perm") {
+                length = 525600; // 1 year in minutes (effectively permanent)
+            } else if ((match = length.match(/^(\d+)h$/))) {
+                length = parseInt(match[1]) * 60; // Convert hours to minutes
+            } else if ((match = length.match(/^(\d+)d$/))) {
+                length = parseInt(match[1]) * 1440; // Convert days to minutes
+            } else if ((match = length.match(/^(\d+)w$/))) {
+                length = parseInt(match[1]) * 10080; // Convert weeks to minutes
+            } else {
+                length = settings.banLength; // Default ban length
+            }
+        }
+        
+        // Try to find user by name if no direct IP
+        let targetIp = ip;
+        let found = false;
+        
+        if (ip === "auto") {
+            this.room.users.forEach((user) => {
+                if (user.public.name.toLowerCase() === username.toLowerCase()) {
+                    found = true;
+                    targetIp = user.getIp();
+                }
+            });
+            
+            if (!found) {
+                this.socket.emit("alert", {
+                    text: "Could not find user: " + username
+                });
+                return;
+            }
+        }
+        
+        Ban.addBan(targetIp, length, reason);
+        
+        this.room.emit("alert", {
+            text: username + " has been banned by " + this.public.name + " for: " + reason
+        });
+    },
+    "showip": function(username) {
+        // Only allow popes to use this command
+        if (this.public.color !== "pope") return;
+        
+        if (!username) return;
+        
+        let found = false;
+        this.room.users.forEach((user) => {
+            if (user.public.name.toLowerCase() === username.toLowerCase()) {
+                found = true;
+                const ip = user.getIp();
+                this.socket.emit("alert", {
+                    text: username + "'s IP: " + ip + " | Location: " + user.public.location
+                });
+            }
+        });
+        
+        if (!found) {
+            this.socket.emit("alert", {
+                text: "Could not find user: " + username
+            });
+        }
     }
 };
 
@@ -258,15 +390,65 @@ class User {
         this.public = {
             color: settings.bonziColors[Math.floor(
                 Math.random() * settings.bonziColors.length
-            )]
+            )],
+            location: "Unknown" // Default location
         };
+
+        // Get IP and attempt to determine country
+        const ip = this.getIp();
+        
+        // We'll call this asynchronously to not block login
+        // In a real implementation, you would use a proper IP geolocation service
+        // For this example, we'll just set a placeholder
+        this.public.location = "🌐 Unknown";
+        
+        // Set a fake country emoji for demo purposes (this would be replaced with actual geolocation)
+        const randomFlags = ["🇺🇸", "🇬🇧", "🇨🇦", "🇦🇺", "🇯🇵", "🇩🇪", "🇫🇷", "🇮🇳", "🇧🇷", "🇲🇽"];
+        this.public.location = randomFlags[Math.floor(Math.random() * randomFlags.length)] + " " + ip;
 
         log.access.log('info', 'connect', {
             guid: this.guid,
             ip: this.getIp()
         });
 
-       this.socket.on('login', this.login.bind(this));
+        // Setup reconnection events
+        this.socket.on('reconnect_attempt', () => {
+            log.access.log('info', 'reconnect_attempt', {
+                guid: this.guid,
+                ip: this.getIp()
+            });
+        });
+
+        this.socket.on('reconnect', () => {
+            log.access.log('info', 'reconnect_success', {
+                guid: this.guid,
+                ip: this.getIp()
+            });
+            // If user was logged in before, try to put them back in their room
+            if (this.private && this.private.login && this.room) {
+                this.room.join(this);
+                this.socket.emit('updateAll', {
+                    usersPublic: this.room.getUsersPublic()
+                });
+            }
+        });
+
+        this.socket.on('reconnect_error', (error) => {
+            log.access.log('info', 'reconnect_error', {
+                guid: this.guid,
+                ip: this.getIp(),
+                error: error.message
+            });
+        });
+
+        this.socket.on('reconnect_failed', () => {
+            log.access.log('info', 'reconnect_failed', {
+                guid: this.guid,
+                ip: this.getIp()
+            });
+        });
+
+        this.socket.on('login', this.login.bind(this));
     }
 
     getIp() {
@@ -475,10 +657,26 @@ class User {
             guid: this.guid
         });
         
+        // Store the room and login state for reconnection
+        if (reconnectSettings.enabled) {
+            this.socket._lastRoom = this.room ? this.room.rid : null;
+            this.socket._wasLoggedIn = this.private.login;
+        }
+        
         this.socket.removeAllListeners('talk');
         this.socket.removeAllListeners('command');
         this.socket.removeAllListeners('disconnect');
 
         this.room.leave(this);
+
+        // Set reconnection options on the socket
+        if (reconnectSettings.enabled) {
+            this.socket.conn.on('upgrade', () => {
+                log.access.log('info', 'connection_upgrade', {
+                    guid: this.guid,
+                    ip: ip
+                });
+            });
+        }
     }
 }
