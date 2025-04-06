@@ -111,7 +111,11 @@
 		"red",
 		"black",
 		"brown",
-		"pink"
+		"pink",
+		"cyan",
+		"yellow",
+		"shadow",
+		"kamala"
 	],
 	"banLength": 1440,
 	"port": 3000,
