@@ -178,9 +178,9 @@ let userCommands = {
             vid: vid
         });
     },
-    "img": function(vidRaw){
+    "image": function(vidRaw){
         var vid = this.private.sanitize ? sanitize(vidRaw) : vidRaw;
-        this.room.emit("img", {
+        this.room.emit("image", {
             guid: this.guid,
             vid: vid
         });
