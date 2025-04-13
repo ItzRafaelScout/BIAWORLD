@@ -27,6 +27,14 @@
     <link rel="stylesheet" type="text/css" href="./css/platform.css">
     <script src="./js/lib/marked.min.js"></script>
     <script src="./js/script.min.js"></script>
+    <script>
+        var show = false;
+        
+        function showtoggle(){
+            $('#logshow').hide();$('#mainlog').show()
+            document.getElementById("logcontent").scrollTop = document.getElementById("logcontent").scrollHeight;
+        }
+        </script>
   </head>
   <body>
     <div id="content">
