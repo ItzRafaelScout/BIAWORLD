@@ -503,6 +503,187 @@ body.vaporwave #chat_send:active {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+#chat_log_button {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 40px;
+    height: 30px;
+    border: 1px solid white;
+    border-radius: 4px;
+    background:
+        center / 16px no-repeat url("https://bonzi.gay/bars.svg"),
+        radial-gradient(circle at 4px 4px, #fff6 0%, #0000 70%),
+        linear-gradient(to top, #512677, #0000 12px),
+        linear-gradient(to left, #512677, #0000 12px),
+        linear-gradient(to bottom, #945cc5 2px, #0000 3px),
+        linear-gradient(to right, #945cc5 2px, #0000 3px),
+        #6310ac;
+}
+
+/* inconsistent as fuck in true XP style */
+#chat_log_button:hover {
+    background:
+        center / 16px no-repeat url("https://bonzi.gay/bars.svg"),
+        radial-gradient(circle at 4px 4px, #fff6 0%, #0000 100%),
+        linear-gradient(to top, #5e3b7c, #0000 12px),
+        linear-gradient(to left, #5e3b7c, #0000 12px),
+        linear-gradient(to bottom, #b27fdf 2px, #0000 3px),
+        linear-gradient(to right, #b27fdf 2px, #0000 3px),
+        #8832d4;
+}
+
+#chat_log_button:active {
+    background:
+        center / 16px no-repeat url("https://bonzi.gay/bars.svg"),
+        radial-gradient(circle at 4px 4px, #fff3 0%, #0000 70%),
+        linear-gradient(to top, #6e4196 2px, #0000 3px),
+        linear-gradient(to left, #6e4196 2px, #0000 3px),
+        linear-gradient(to right, #361950, #0000 12px),
+        linear-gradient(to bottom, #361950, #0000 12px),
+        #5a1f8f;
+}
+
+#chat_log {
+    position: absolute;
+    width: 350px;
+    height: calc(100% - 30px);
+}
+
+#chat_log .window_body {
+    display: flex;
+}
+
+#chat_log_resize {
+    position: absolute;
+    top: 0;
+    right: -4px;
+    bottom: 0px;
+    width: 12px;
+    cursor: ew-resize;
+    user-select: none;
+}
+
+#chat_log_content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden scroll;
+    font-size: 12pt;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+#chat_log_content hr:first-child {
+    display: none;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+.window_header {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 2px 7px 0 10px;
+    border-image: url("https://bonzi.gay/img/desktop/window_header.png") 0 9 fill / 0px 9px;
+    image-rendering: pixelated;
+    color: white;
+    font-size: 16px;
+    text-shadow: #0006 2px 2px 1px;
+}
+
+.window_body {
+    flex: 1;
+    padding: 4px 6px 6px 6px;
+    border-image: url("https://bonzi.gay/img/desktop/window_border.png") 0 6 6 6 / 0px 6px 6px 6px;
+    image-rendering: pixelated;
+    background: #ffe;
+    overflow: hidden;
+}
+
+.window_close {
+    margin-left: auto;
+    width: 21px;
+    height: 21px;
+    margin-bottom: 2px;
+    background-image: url("https://bonzi.gay/img/desktop/close.png")
+}
+
+.window_close:hover {
+    background-position-y: -21px;
+}
+
+.window_close:active {
+    background-position-y: -42px;
+}
+
+.log_message {
+    display: flex;
+    flex-direction: row;
+    padding: 1px 6px;
+    gap: 12px;
+    image-rendering: auto;
+    position: relative;
+}
+
+.log_message:hover {
+    background-color: #0002;
+}
+
+.reply {
+    display: none;
+    width: 14px;
+    height: 14px;
+    margin: 2px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: url("./img/reply.svg") center / contain;
+    cursor: pointer;
+    user-select: none;
+}
+
+.log_message:hover .reply {
+    display: block;
+}
+
+.log_icon {
+    align-self: flex-start;
+    flex-shrink: 0;
+    --src-width: 3400px;
+    --src-height: 3360px;
+    --crop-x: 76px;
+    --crop-y: 39px;
+    /* CSS doesn't let you divide px/px because they're stupid idfk */
+    --crop-area: 50;
+    --icon-size: 25;
+    --scale: calc(var(--icon-size) / var(--crop-area));
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
+    background-position-x: calc(-1 * var(--crop-x) * var(--scale));
+    background-position-y: calc(-1 * var(--crop-y) * var(--scale));
+    background-size: calc(var(--src-width) * var(--scale));
+}
+
+.log_left_spacing {
+    /* good fucking element */
+    width: 25px;
+    flex-shrink: 0;
+}
+
+.log_message_cont {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 @media screen and (max-height: 550px) {
   #page_login {
     background-image: url("../img/logon/logo.png"), url("../img/logon/topleft.png");
