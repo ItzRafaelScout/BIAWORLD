@@ -736,3 +736,67 @@ body.vaporwave #chat_send:active {
 }
 
 /*# sourceMappingURL=style.min.css.map */
+
+#log{
+position:fixed;
+top:0;
+left:0;
+max-width:300px;
+color:white;
+z-index:1000;
+height:calc(100% - 30px);
+}
+#log button{
+font-size:20px;
+position:fixed;
+padding:5px 10px;
+top:3px;
+left:3px;
+border:none;
+font-family:arial;
+background-color: #502570;
+border: 2px solid white;
+border-radius: 4px;
+box-shadow: inset 3px 3px 2px 2px #803376, inset -3px -3px 2px 2px #351044;
+color:white;
+z-index:-10;
+}
+#log button:active{
+box-shadow: inset 3px 3px 2px 2px #351044, inset -3px -3px 2px 2px #803376;
+}
+#mainlog{
+    position:fixed;
+    height:calc(100% - 30px);
+    width:320px;
+    top:0;
+    left:0;
+}
+#title{
+    padding: 6px 8px;
+    width:100%;
+    box-sizing: border-box;
+    font-size:20px;
+    border-radius:0px 5px 0px 0px;
+    background-color: #6d3399;  
+    box-shadow: inset -3px 3px 3px 2px rgba(255,255,255,0.2);     
+}
+#title i{
+    float:right;
+}
+#logcontent{
+    width:100%;
+    line-height:1.5;
+    padding:0px 5px;
+    left:0px;
+    box-sizing: border-box;
+    height:calc(100% - 31px);
+    background-color:rgba(0,0,0,0.8);
+    box-shadow: inset -3px 0px 3px 2px rgba(255,255,255,0.4);    
+    overflow-y:scroll;
+    border-radius:0px 0px 5px 0px;
+    overflow-x:break;
+    word-break:break-word;
+}
+#logcontent::-webkit-scrollbar{
+    display:none;
+}
